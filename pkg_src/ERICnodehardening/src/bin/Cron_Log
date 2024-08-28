@@ -1,0 +1,7 @@
+daily
+compress
+size 100M
+rotate 4
+create
+dateext
+

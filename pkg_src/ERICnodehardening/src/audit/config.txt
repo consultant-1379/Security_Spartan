@@ -1,0 +1,97 @@
+## Things that could affect time
+-a always,exit -F arch=b32 -S clock_settime -F a0=0x0 -F key=time-change
+-a always,exit -F arch=b64 -S clock_settime -F a0=0x0 -F key=time-change
+# Introduced in 2.6.39, commented out because it can make false positives
+#-a always,exit -F arch=b32 -S clock_adjtime -F key=time-change
+#-a always,exit -F arch=b64 -S clock_adjtime -F key=time-change
+
+## Things that could affect system locale
+-w /etc/hostname -p wa -k system-locale
+-a always,exit -F dir=/etc/NetworkManager/ -F perm=wa -F key=system-locale
+
+## - Logon (unsuccessful and successful) and logout (successful)
+## Handled by pam, sshd, login, and gdm
+## Might also want to watch these files if needing extra information
+#-w /var/log/tallylog -p wa -k logins
+
+
+##- Use of print command (unsuccessful and successful)
+##- Export to media (successful)
+## You have to mount media before using it. You must disable all automounting
+## so that its done manually in order to get the correct user requesting the
+## export
+-a always,exit -F arch=b64 -S mount -S umount2 -F dir=/media -k media
+
+##- System startup and shutdown (unsuccessful and successful)
+-w /sbin/shutdown -p x -k power
+-w /sbin/poweroff -p x -k power
+-w /sbin/reboot -p x -k power
+-w /sbin/halt -p x -k power
+
+## Process ID change (switching accounts) applications
+-w /bin/su -p xa -k priv_esc
+-w /usr/bin/sudo -p xa -k priv_esc
+-w /etc/sudoers -p rwa -k priv_esc
+
+### Successful and unsuccessful attempts to read information from the audit records
+-w /var/log/audit/ -p rw -k auditlog
+-w /var/log/audit/audit.log -p rw -k auditlog
+-w /etc/audit/audit.rules -p ra -k auditrules
+-w /etc/audit/rules.d/audit.rules -p ra -k auditmain
+
+# RPM
+-w /usr/bin/rpm -p x -k software_mgmt
+-w /usr/bin/yum -p x -k software_mgmti
+
+# KILL
+-a always,exit -F arch=b64 -S kill -F key=kill_rule
+
+# System config & file system activities
+-w /boot/grub2/grub.cfg -p w -k grub2_cfg
+-w /etc/fstab -p w -k fstab
+-w /etc/sysctl.conf -p w -k sysctl_conf
+-w /etc/ssh/ssh_config -p warx -k ssh_config
+-w /etc/ssh/sshd_config -p warx -k ssh_config
+-w /etc/yum.repos.d/ -p w -k repos
+-w /etc/profile -p w -k profile
+-w /etc/multipath.conf -p w -k multipath
+-w /etc/security/limits.conf -p w -k limits
+-w /etc/securetty -p w -k securetty
+-w /etc/hosts.allow -p w -k host_allow
+-w /etc/hosts.deny -p w -k host_deny
+-w /etc/sysconfig/network-scripts/ -p rwax -k fs_activity
+
+# OS or Application changes 
+-w /usr/bin/yum -p x -k yellowdog_update_mdfy
+-w /usr/bin/rpm -p x -k redhat_package_Mgmt
+-w /etc/redhat-release -p wx -k redhat_release
+-w /usr/sbin/service  -p x -k service
+-w /usr/bin/systemctl  -p x -k systemctl
+-w /usr/sbin/mkfs.xfs  -p x -k mkfs_xfs
+-w /usr/sbin/mkfs.ext4  -p x -k mkfs_ext4
+-w /usr/sbin/mkswap  -p x -k mkswap
+-w /usr/sbin/mkfs  -p x -k mkfs
+-w /etc/lvm -p rwax -k lvm
+
+# System scan for open ports and services
+-w /usr/bin/netstat -p x -k netstat
+-w /usr/sbin/route -p x -k route
+-w /usr/bin/firewall-cmd -p x -k firewall-cmd
+-w /etc/services -p rax -k services
+-w /usr/sbin/lsof -p x -k lsof
+-w /usr/sbin/nmap -p x -k nmap
+-w /sys/class/scsi_host/ -p rawx -k scsi_host
+-w /usr/bin/rescan-scsi-bus.sh -p rawx -k rescam_scsi_bus
+-w /usr/sbin/ss -p x -k ss
+-w /usr/sbin/iptables -p x -k iptables
+-w /usr/sbin/iptables-save -p x -k iptables-save
+-w /usr/bin/telnet -p x -k telnet
+-w /usr/bin/ftp -p x -k ftp
+
+# Keygenaration and Management
+-w /eniq/sw/runtime/java/bin/keytool -p x -k keytool
+-w /usr/bin/ssh-keygen -p x -k keygen
+-w /usr/bin/openssl -p x -k openssl
+
+# System communication or operation or program failures
+-a always,exit -F arch=b64 -S accept,connect -F key=external-access

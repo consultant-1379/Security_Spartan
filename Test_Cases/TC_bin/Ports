@@ -1,0 +1,4 @@
+MWS
+53/tcp 67/udp 68/udp 2049/tcp 2049/udp 20048/tcp 20048/udp 111/tcp 111/udp 37726/tcp 50740/udp 1556/tcp 13724/tcp 13782/tcp
+ENIQ
+6389/tcp 2640/tcp 2641/tcp 2642/tcp 8443/tcp 2637/tcp 2638/tcp 2639/tcp 1200/tcp 60001/tcp 60002/tcp 60003/tcp 60004/tcp 60005/tcp 1556/tcp 13724/tcp 13782/tcp 4051-4100/tcp
